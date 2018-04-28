@@ -1,3 +1,38 @@
+
+# VideoChatClient
+
+A react-native based client for communicating via WebRTC APIs.
+
+## Requirements
+
+* NodeJS & NPM
+* Android SDK build tools >= 25 (and probably some other stuff)
+* Xcode (the newer the better, additional SDKs might be required)
+
+**Optional:**
+
+These are most likely included with Xcode and Android Studio.
+
+* Android emulator
+    - Front camera webcam0, rear simulated
+* iOS simulator
+    - Note that iOS simulator doesn't support webcam
+
+
+## Build and run
+
+1. Run `npm install` in project root
+2. Run `react-native link react-native-vector-icons`
+3. See [react-native-webrtc][rn-wrtc] for required build configurations on your preferred platform(s)
+4. Run `npm run PLATFORM` to boot build and launch the app in your preferred environment
+    * If you're targeting to emulator or simulator, launch them beforehand
+    * If you're targeting to real device, make sure it is connected and in (possible) development mode
+5. When making changes to source just run step 4 again
+    * Subsequent builds will be much faster
+
+
+[rn-wrtc]:https://github.com/oney/react-native-webrtc
+
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
