@@ -14,7 +14,7 @@ export const login = (username, password) => {
   return {
     apiCall: {
       method: 'post',
-      path: '/api/login',
+      path: '/api/auth',
       types: [REQUEST_LOGIN, REQUEST_LOGIN_SUCCESS, REQUEST_LOGIN_FAIL],
       data: {username, password}
     }

@@ -2,10 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import TabNavigator from '../../components/TabNavigator';
-import { fetchUser } from '../../actions';
-import HomeScreen from '../HomeScreen';
-import UserScreen from '../UserScreen';
-import ChatScreen from '../ChatScreen';
+import { fetchUser } from '../../actions/api';
+import {
+  connectToSignalServer,
+  disconnectFromSignalServer
+} from '../../actions/signal';
+import HomeScreen from './HomeScreen';
+import UserScreen from './UserScreen';
+import ChatScreen from './ChatScreen';
 
 const screens = ['home', 'wechat', 'user'];
 
@@ -17,18 +21,20 @@ class MainScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const { user, session: { loggedIn }, navigator, dispatch } = props;
-    if (!loggedIn) navigator.navigate('Home');
+    const { session: { loggedIn, user }, navigator, dispatch } = props;
+    if (!loggedIn) navigator.navigate('Auth');
+    /*
     if (
       Object.keys(user).length === 0
       || !user.expires
       || user.expires < Date.now()
     ) {
       dispatch(fetchUser());
-    }
+    }*/
     this.state = {
       screen: 'home'
     };
+    dispatch(connectToSignalServer());
   }
 
   _changePage(page) {
@@ -38,7 +44,7 @@ class MainScreen extends React.Component {
   }
 
   render() {
-    const { username, email } = this.props.user;
+    const { user: { username, email }} = this.props.session;
     const { screen } = this.state;
     return (
       <View style={styles.container}>
@@ -52,8 +58,8 @@ class MainScreen extends React.Component {
 }
 
 const selector = (state) => {
-  const { session, user } = state;
-  return { session, user };
+  const { session } = state;
+  return { session };
 };
 
 export default connect(selector)(MainScreen);

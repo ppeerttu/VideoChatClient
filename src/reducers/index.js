@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import user from './user';
 import session from './session';
+import signal from './signal';
 import navigator from './navigator';
 
 export default combineReducers({
-  user,
   session,
+  signal,
   navigation: navigator
 });

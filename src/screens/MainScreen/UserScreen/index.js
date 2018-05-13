@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 class UserScreen extends React.Component {
 
   render() {
-    const { username, email, firstName, lastName } = this.props.user;
+    const { username, email, firstName, lastName } = this.props.session.user;
     return (
       <View style={styles.container}>
         { username && <Text>Username: {username}</Text> }
@@ -18,8 +18,8 @@ class UserScreen extends React.Component {
 }
 
 const selector = (state) => {
-  const { user } = state;
-  return { user };
+  const { session } = state;
+  return { session };
 };
 
 export default connect(selector)(UserScreen);

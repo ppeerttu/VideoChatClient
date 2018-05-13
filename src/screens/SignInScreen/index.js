@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Button } from 'react-native';
 import { connect } from 'react-redux';
 import { Input } from 'react-native-elements';
-import { login } from '../../actions';
+import { login } from '../../actions/api';
 
 class SignInScreen extends React.Component {
 

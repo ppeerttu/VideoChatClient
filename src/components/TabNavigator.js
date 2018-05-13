@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
   layout: {
     width: '100%',
     padding: 10,
-    backgroundColor: '#fff',
     justifyContent: 'space-evenly',
     flexDirection: 'row',
     bottom: 0,

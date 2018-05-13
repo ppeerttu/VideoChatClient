@@ -17,3 +17,43 @@ export const REFRESH_TOKEN_FAIL = 'REFRESH_TOKEN_FAIL';
 
 export const ASYNC_FETCH_USER = 'ASYNC_FETCH_USER';
 export const ASYNC_FETCH_SESSION = 'ASYNC_FETCH_SESSION';
+
+export const OPEN_SOCKET = 'OPEN_SOCKET';
+export const CLOSE_SOCKET = 'CLOSE_SOCKET';
+
+export const SOCKET_DISCONNECTED = 'SOCKET_DISCONNECTED';
+export const SOCKET_CONNECTED = 'SOCKET_CONNECTED';
+export const SOCKET_RECONNECTING = 'SOCKET_RECONNECTING';
+export const SOCKET_RECONNECT_ATTEMPT = 'SOCKET_RECONNECT_ATTEMPT';
+
+export const SOCKET_CONNECT_ERROR = 'SOCKET_CONNECT_ERROR';
+export const SOCKET_CONNECT_TIMEOUT = 'SOCKET_CONNECT_TIMEOUT';
+export const SOCKET_RECONNECT_ERROR = 'SOCKET_RECONNECT_ERROR';
+export const SOCKET_RECONNECT_FAILED = 'SOCKET_RECONNECT_FAILED';
+
+export const RECEIVE_CALL = 'RECEIVE_CALL';
+export const RECEIVE_ANSWER = 'RECEIVE_ANSWER';
+export const RECEIVE_USERS = 'RECEIVE_USERS';
+export const RECEIVE_CANDIDATE = 'RECEIVE_CANDIDATE';
+export const RECEIVE_LEAVE = 'RECEIVE_LEAVE';
+
+export const SEND_CALL = 'SEND_CALL';
+export const SEND_ANSWER = 'SEND_ANSWER';
+export const SEND_CANDIDATE = 'SEND_CANDIDATE';
+export const SEND_LEAVE = 'SEND_LEAVE';
+
+// socket.io message types
+export const receiveMessageTypes = {
+  RECEIVE_CALL: 'call',
+  RECEIVE_ANSWER: 'answer',
+  RECEIVE_CANDIDATE: 'candidate',
+  RECEIVE_USERS: 'users',
+  RECEIVE_LEAVE: 'leave'
+};
+
+export const sendMessageTypes = {
+  SEND_CALL: 'call',
+  SEND_ANSWER: 'answer',
+  SEND_CANDIDATE: 'candidate',
+  SEND_LEAVE: 'leave'
+};

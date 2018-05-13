@@ -9,7 +9,8 @@ import {
 
 const initialSession = {
   loggedIn: false,
-  isPending: false
+  isPending: false,
+  user: {}
 };
 
 const session = (state = initialSession, action) => {
@@ -26,7 +27,8 @@ const session = (state = initialSession, action) => {
     case REQUEST_LOGIN_SUCCESS:
       return Object.assign({}, {
         loggedIn: true,
-        isPending: false
+        isPending: false,
+        user: action.res.user
       });
     case REQUEST_LOGOUT_SUCCESS:
       return Object.assign({}, {
@@ -35,7 +37,9 @@ const session = (state = initialSession, action) => {
       });
     case REQUEST_LOGIN_FAILED:
     case REQUEST_LOGOUT_FAILED:
-      return Object.assign({}, state);
+      return Object.assign({}, state, {
+        isPending: false
+      });
     default:
       return state;
   }

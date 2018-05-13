@@ -1,4 +1,4 @@
-import { Fetch } from '../mock/fetch';
+import { Fetch } from './fetch';
 import { AsyncStorage } from 'react-native';
 import {
   REQUEST_LOGIN_SUCCESS,
@@ -31,7 +31,6 @@ async function request(method, path, data) {
     'Content-Type': 'application/json'
   };
   let headers = await getHeaders(baseHeaders);
-  console.log(headers);
   return fetch.callApi(method, headers, path, data);
 }
 
