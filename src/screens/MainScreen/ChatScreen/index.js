@@ -70,7 +70,6 @@ class ChatScreen extends React.Component {
     if (iceCandidates && iceCandidates.length > prevState.candidates.length) {
       pc.addIceCandidate(new RTCIceCandidate(iceCandidates[iceCandidates.length - 1]));
       this.setState({ candidates: iceCandidates });
-      console.log('candidate set');
 
     }
   }
@@ -92,12 +91,10 @@ class ChatScreen extends React.Component {
           };
       pc = new RTCPeerConnection(configuration);
       pc.onicecandidate = e => {
-        console.log('event for candidate:', e);
         if (e.candidate) self._onIceCandidate(e.candidate);
       };
 
       pc.onaddstream = e => {
-        console.log('add stream', e);
         self.setState({ remoteSrc: e.stream.toURL() });
       };
       pc.addStream(localStream);
@@ -247,7 +244,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    backgroundColor: '#007bff'
+    backgroundColor: '#000000'
   },
   smallView: {
     width: '40%',
@@ -278,7 +275,7 @@ const styles = StyleSheet.create({
   },
   container: {
     height: '100%',
-    backgroundColor: '#ff0000',
+    backgroundColor: '#000000',
     width: '100%'
   }
 });

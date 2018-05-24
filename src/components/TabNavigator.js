@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
-
+import { primary } from '../styles/common';
 
 
 class TabNavigator extends React.Component {
@@ -18,7 +18,7 @@ class TabNavigator extends React.Component {
             name={x}
             size={35}
             type="font-awesome"
-            color={ screen === x ? '#000' : '#9E9E9E' }
+            color={ screen === x ? primary.dark : primary.light }
           />}
           onPress={() => this.props.onChangePage(x)}
           key={x}

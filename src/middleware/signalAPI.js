@@ -60,10 +60,7 @@ const closeSocket = () => socket.disconnect(true);
 /**
  * Emit a message
  */
-const emit = ( type, payload ) => {
-  console.log(type, payload);
-  socket.emit( type, payload );
-}
+const emit = ( type, payload ) => socket.emit( type, payload );
 
 
 const getToken = async () => {

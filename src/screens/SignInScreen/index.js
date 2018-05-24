@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
-import { Input } from 'react-native-elements';
+import { Input, Button } from 'react-native-elements';
 import { login } from '../../actions/api';
+import { primary } from '../../styles/common';
 
 class SignInScreen extends React.Component {
 
@@ -50,6 +51,8 @@ class SignInScreen extends React.Component {
           <Button
             title="Log in"
             onPress={(e) => this._onPressButton(e)}
+            raised
+            buttonStyle={styles.button}
           />
         </View>
 
@@ -75,5 +78,8 @@ const styles = StyleSheet.create({
   input: {
     width: '80%',
     marginBottom: 10
+  },
+  button: {
+    backgroundColor: primary.default
   }
 });
