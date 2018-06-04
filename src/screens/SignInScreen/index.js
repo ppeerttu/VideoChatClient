@@ -80,6 +80,6 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   button: {
-    backgroundColor: primary.default
+    backgroundColor: primary.light
   }
 });

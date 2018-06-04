@@ -1,15 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { StyleSheet, View, Platform, Dimensions } from 'react-native';
-import UserList from '../../../components/UserList';
-import IncomingCall from '../../../components/IncomingCall';
-import { Icon } from 'react-native-elements';
+//import InCallManager from 'react-native-incall-manager';
+//import UserList from '../../components/UserList';
+import TopBar from '../../components/TopBar';
+import BottomBar from '../../components/BottomBar';
+import IncomingCall from '../../components/IncomingCall';
+//import { Icon } from 'react-native-elements';
 import WebRTC from 'react-native-webrtc';
 import {
   callToPeer,
   answerToPeer,
-  sendCandidate
-} from '../../../actions/signal';
+  sendCandidate,
+  leavePeer
+} from '../../actions/signal';
 const {
   RTCPeerConnection,
   RTCIceCandidate,
@@ -32,49 +36,93 @@ class ChatScreen extends React.Component {
       localSrc: null,
       remoteSrc: null,
       showUsers: false,
-      candidates: []
+      candidates: [],
+      answer: false
     };
   }
 
   _switchCamera() {
     const isFront = !this.state.isFront;
     const self = this;
-    this.setState({isFront});
-    getLocalStream(isFront, (stream) => {
+    this.setState({ isFront });
+    getLocalStream(isFront, stream => {
       if (localStream) {
-        /*
-        for (const id in pcPeers) {
-          const pc = pcPeers[id];
-          pc && pc.removeStream(localStream);
-        }
-        */
         pc.removeStream(localStream);
-
         localStream.release();
       }
       localStream = stream;
       self.setState({ localSrc: stream.toURL()});
-
-      /*
-      for (const id in pcPeers) {
-        const pc = pcPeers[id];
-        pc && pc.addStream(localStream);
-      }
-      */
       pc.addStream(localStream);
     });
   }
 
-  getDerivedStateFromProps(nextProps, prevState) {
-    const { signal: { iceCandidates }} = nextProps;
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { signal: { iceCandidates, call: { peer: { answer }} }} = nextProps;
     if (iceCandidates && iceCandidates.length > prevState.candidates.length) {
       pc.addIceCandidate(new RTCIceCandidate(iceCandidates[iceCandidates.length - 1]));
-      this.setState({ candidates: iceCandidates });
-
+      return { candidates: iceCandidates };
     }
+    if (answer && !prevState.answer) {
+      pc.setRemoteDescription(new RTCSessionDescription(answer));
+      return { answer: true };
+    }
+    return null;
   }
 
   componentDidMount() {
+    this._initPeerConnection();
+  }
+
+  componentWillUnmount() {
+    this._closeConnection();
+  }
+
+  _onCloseChat() {
+    // TODO: Manage webrtc connection etc.
+    this._closeConnection();
+    this.props.navigation.navigate('App');
+  }
+
+  render() {
+    const { localSrc, remoteSrc } = this.state;
+    const { signal: { users, call: { peer: { offer, answer, username }, amICaller, state } }, session: { user } } = this.props;
+    return (
+      <View style={styles.container}>
+        <TopBar
+          users={users}
+          user={user}
+          onCallToUser={(u) => this._onCallToUser(u)}
+          onSwitchCamera={() => this._switchCamera()}
+        />
+        {
+          (offer && !answer && !amICaller) &&
+          <IncomingCall
+            style={styles.popUp}
+            username={username}
+            onAnswer={() => this._onAnswer()}
+            onDecline={() => this._onDecline()}
+          />
+        }
+
+        <RTCView streamURL={localSrc} style={remoteSrc ? styles.smallView : styles.fullView} />
+        {
+          remoteSrc &&
+          <RTCView streamURL={remoteSrc} style={styles.fullView} />
+        }
+        <BottomBar inCall={state === 'CONNECTED'}  onClose={() => this._onCloseChat()} />
+      </View>
+    );
+  }
+
+  _closeConnection() {
+    this.props.dispatch(leavePeer());
+    if (pc && localStream) {
+      pc.removeStream(localStream);
+    }
+    pc.close();
+  }
+
+  _initPeerConnection() {
     const self = this;
     getLocalStream(true, stream => {
       localStream = stream;
@@ -91,29 +139,47 @@ class ChatScreen extends React.Component {
           };
       pc = new RTCPeerConnection(configuration);
       pc.onicecandidate = e => {
-        if (e.candidate) self._onIceCandidate(e.candidate);
+        const sym = Object.getOwnPropertySymbols(e).find((s) => String(s) === 'Symbol(original_event)');
+        if (sym && e[sym].candidate) self._onIceCandidate(e[sym].candidate.toJSON());
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        // If remote user has disconnected
+        if (pc.iceConnectionState === 'disconnected') {
+          // TODO: Inform user about lost connection
+          self.setState({ localSrc: null, remoteSrc: null });
+          self._initPeerConnection();
+        }
+      };
+
+      pc.onremovestream = () => {
+        console.log('Stream removed');
       };
 
       pc.onaddstream = e => {
         self.setState({ remoteSrc: e.stream.toURL() });
+        //InCallManager.start({media: 'video'});
+        //InCallManager.requestRecordPermission();
+        //InCallManager.requestCameraPermission();
+        //InCallManager.setSpeakerphoneOn();
       };
+
       pc.addStream(localStream);
+      //InCallManager.setForceSpeakerphoneOn( true );
+      //InCallManager.start({media: 'video'});
+      //InCallManager.requestRecordPermission();
+      //InCallManager.requestCameraPermission();
+      //InCallManager.setSpeakerphoneOn();
     });
   }
 
   _onIceCandidate(candidate) {
     const { dispatch, signal: { call: { peer: { username }}}} = this.props;
-    console.log('sending candidate to ', username);
     dispatch(sendCandidate(username, candidate));
-  }
-
-  _onShowUsers() {
-    this.setState({ showUsers: !this.state.showUsers });
   }
 
   _onCallToUser(username) {
     const { dispatch } = this.props;
-    console.log('call to ', username);
     pc.createOffer()
       .then(offer => {
         dispatch(callToPeer(username, offer));
@@ -124,73 +190,17 @@ class ChatScreen extends React.Component {
 
   _onAnswer() {
     const { dispatch, signal: { call: { peer: { username, offer }}}} = this.props;
-    console.log('Going to answer to ' + username);
-
     pc.setRemoteDescription(new RTCSessionDescription(offer));
-
     pc.createAnswer(answer => {
       pc.setLocalDescription(answer);
-      console.log(answer.toJSON());
       dispatch(answerToPeer(username, answer.toJSON()));
     }, (error) => console.error(error));
 
   }
 
   _onDecline() {
-    const { signal: { call: { peer: { username }}}} = this.props;
-    console.log('Going to decline the call to ' + username);
+    const { signal: { call: { peer: { username }}}, dispatch } = this.props;
     dispatch(answerToPeer(username, false));
-  }
-
-
-  render() {
-    const { localSrc, remoteSrc, showUsers } = this.state;
-    const { signal: { users, call: { peer: { offer, answer, username }, amICaller } }, session: { user } } = this.props;
-    return (
-      <View style={styles.container}>
-        <View style={styles.usersContainer}>
-          <Icon
-            name="users"
-            type="font-awesome"
-            containerStyle={styles.usersIcon}
-            onPress={() => this._onShowUsers()}
-            size={30}
-            color="#fff"
-          />
-          {
-            showUsers &&
-            <UserList
-              users={users}
-              user={user}
-              onPress={(username) => this._onCallToUser(username)}
-            />
-          }
-        </View>
-        {
-          (offer && !answer && !amICaller) &&
-          <IncomingCall
-            username={username}
-            onAnswer={() => this._onAnswer()}
-            onDecline={() => this._onDecline()}
-          />
-        }
-        <Icon
-          name="camera"
-          type="font-awesome"
-          containerStyle={styles.cameraIcon}
-          onPress={() => this._switchCamera()}
-          size={30}
-          color="#fff"
-        />
-
-
-        <RTCView streamURL={localSrc} style={styles.smallView} />
-        {
-          remoteSrc &&
-          <RTCView streamURL={remoteSrc} style={styles.fullView} />
-        }
-      </View>
-    );
   }
 }
 
@@ -204,7 +214,7 @@ function getLocalStream(isFront, callback) {
     MediaStreamTrack.getSources(sourceInfos => {
       for (let i = 0; i < sourceInfos.length; i++) {
         const sourceInfo = sourceInfos[i];
-        if(sourceInfo.kind == "video" && sourceInfo.facing == (isFront ? "front" : "back")) {
+        if (sourceInfo.kind == "video" && sourceInfo.facing == (isFront ? "front" : "back")) {
           videoSourceId = sourceInfo.id;
         }
       }
@@ -253,29 +263,12 @@ const styles = StyleSheet.create({
     top: 20,
     right: 0
   },
-  cameraIcon: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 100
-  },
-  usersContainer: {
-    position: 'absolute',
-    paddingTop: 40,
-    top: 0,
-    left: 0,
-    zIndex: 90,
-    width: 300
-  },
-  usersIcon: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    zIndex: 100
-  },
   container: {
     height: '100%',
     backgroundColor: '#000000',
     width: '100%'
+  },
+  popUp: {
+    zIndex: 110
   }
 });

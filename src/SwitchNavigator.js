@@ -4,12 +4,15 @@ import {
 
 import SignInScreen from './screens/SignInScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
-import AppNavigator from './AppNavigator';
+import ChatScreen from './screens/ChatScreen';
+import MainScreen from './screens/MainScreen';
+//import AppNavigator from './AppNavigator';
 
 export default SwitchNavigator({
   AppLoading: AuthLoadingScreen,
-  App: AppNavigator,
-  Auth: SignInScreen
+  App: MainScreen,
+  Auth: SignInScreen,
+  Chat: ChatScreen
 },
 {
   initialRouteName: 'AppLoading'

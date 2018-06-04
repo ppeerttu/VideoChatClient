@@ -21,8 +21,13 @@ const danger = {
   default: '#FF3D00'
 };
 
+const success = {
+  default: '#43A047'
+};
+
 module.exports = {
   primary,
   secondary,
-  danger
+  danger,
+  success
 };

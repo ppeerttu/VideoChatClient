@@ -15,7 +15,7 @@ import {
 const callStates = {
   IDLE: 'IDLE',
   RINGING: 'RINGING',
-  ON: 'ON',
+  CONNECTED: 'CONNECTED',
   ALERTING: 'ALERTING'
 };
 
@@ -67,7 +67,7 @@ const signal = (state = initialSignal, action) => {
       if (payload.answer) {
         return Object.assign({}, state, {
           call: {
-            state: callStates.ON,
+            state: callStates.CONNECTED,
             peer: Object.assign({}, state.call.peer, {
               username: state.call.peer.username,
               answer: payload.answer
@@ -108,7 +108,7 @@ const signal = (state = initialSignal, action) => {
       }
       return Object.assign({}, state, {
         call: Object.assign({}, state.call, {
-          state: callStates.ON,
+          state: callStates.CONNECTED,
           peer: Object.assign({}, state.call.peer, {
             answer: payload.answer
           })

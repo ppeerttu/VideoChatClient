@@ -9,7 +9,6 @@ import {
 } from '../../actions/signal';
 import HomeScreen from './HomeScreen';
 import UserScreen from './UserScreen';
-import ChatScreen from './ChatScreen';
 
 const screens = ['home', 'wechat', 'user'];
 
@@ -21,8 +20,8 @@ class MainScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const { session: { loggedIn, user }, navigator, dispatch } = props;
-    if (!loggedIn) navigator.navigate('Auth');
+    const { session: { loggedIn, user }, navigation, dispatch, signal: { connected } } = props;
+    if (!loggedIn) navigation.navigate('Auth');
     /*
     if (
       Object.keys(user).length === 0
@@ -34,13 +33,22 @@ class MainScreen extends React.Component {
     this.state = {
       screen: 'home'
     };
-    dispatch(connectToSignalServer());
+    if (!connected) dispatch(connectToSignalServer());
   }
 
   _changePage(page) {
+    if (page === 'wechat') {
+      this._navigateTo('Chat');
+      return;
+    }
     this.setState({
       screen: page
     });
+
+  }
+
+  _navigateTo(screen) {
+    this.props.navigation.navigate(screen);
   }
 
   render() {
@@ -48,18 +56,21 @@ class MainScreen extends React.Component {
     const { screen } = this.state;
     return (
       <View style={styles.container}>
-        { screen === 'user' && <UserScreen /> }
-        { screen === 'home' && <HomeScreen /> }
-        { screen === 'wechat' && <ChatScreen /> }
-        <TabNavigator screen={screen} screens={screens} onChangePage={(page) => this._changePage(page)} />
+        <View style={styles.contentContainer}>
+          { screen === 'user' && <UserScreen /> }
+          { screen === 'home' && <HomeScreen /> }
+        </View>
+        <View style={styles.navigator}>
+          <TabNavigator screen={screen} screens={screens} onChangePage={(page) => this._changePage(page)} />
+        </View>
       </View>
     );
   }
 }
 
 const selector = (state) => {
-  const { session } = state;
-  return { session };
+  const { session, signal } = state;
+  return { session, signal };
 };
 
 export default connect(selector)(MainScreen);
@@ -67,9 +78,12 @@ export default connect(selector)(MainScreen);
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%'
+    flex: 1
+  },
+  contentContainer: {
+    flex: 1
+  },
+  navigator: {
+
   }
 });

@@ -1,13 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Icon } from 'react-native-elements';
+import { primary } from '../../../styles/common';
+
 
 class HomeScreen extends React.Component {
 
   render() {
     return (
       <View style={styles.container}>
-        <Text>Home screen</Text>
+        <Icon
+          name="home"
+          type="font-awesome"
+          color={primary.default}
+          size={75}
+        />
       </View>
     );
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import { danger, secondary } from '../styles/common';
 
@@ -7,22 +7,22 @@ import { danger, secondary } from '../styles/common';
 class IncomingCall extends React.Component {
 
   render() {
-    const { username, onAnswer, onDecline } = this.props;
+    const { username, onAnswer, onDecline, style } = this.props;
     return (
-      <View>
-        <Card title="Incoming call">
+      <View style={style || {}}>
+        <Card title="Incoming call" style={{ zIndex: 100 }}>
           <Text style={{ marginBottom: 10 }}>
-            {username} is calling to you. {secondary.default}, {danger.default}
+            {username} is calling to you.
           </Text>
-          <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row' }}>
+          <View style={{ display: 'flex', justifyContent: 'space-evenly', flexDirection: 'row' }}>
             <Button
               title="Accept"
-              backgroundColor={secondary.default}
+              buttonStyle={styles.acceptBtn}
               onPress={() => onAnswer()}
             />
             <Button
               title="Decline"
-              backgroundColor={danger.default}
+              buttonStyle={styles.declineBtn}
               onPress={() => onDecline()}
             />
           </View>
@@ -31,5 +31,14 @@ class IncomingCall extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  acceptBtn: {
+    backgroundColor: secondary.dark
+  },
+  declineBtn: {
+    backgroundColor: danger.default
+  }
+});
 
 export default IncomingCall;
